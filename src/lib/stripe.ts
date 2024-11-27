@@ -30,8 +30,8 @@ export const createPaymentSession = async (
 			}
 		],
 		mode: 'payment',
-		success_url: `http://localhost:5173/success`,
-		cancel_url: `http://localhost:5173/`,
+		success_url: `https://the-last-word.flaviomoreno.fr/success`,
+		cancel_url: `https://the-last-word.flaviomoreno.fr/`,
 		payment_intent_data: {
 			metadata: {
 				message,
