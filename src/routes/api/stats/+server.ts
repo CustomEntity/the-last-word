@@ -1,67 +1,27 @@
 import { json } from '@sveltejs/kit';
+import { SUPABASE_KEY, SUPABASE_URL } from '$env/static/private';
 
 export async function GET() {
   try {
-/*    const messages = await xata.db.messages
-      .filter('payment_status', 'completed')
-      .getAll();
-
-    const totalMessages = messages.length;
-    
-    let totalDuration = 0;
-    let longestMessage = null;
-    let shortestMessage = null;
-    
-    messages.forEach((message, index) => {
-      const nextMessage = messages[index + 1];
-      if (nextMessage) {
-        const duration = new Date(nextMessage.timestamp).getTime() - 
-                        new Date(message.timestamp).getTime();
-        
-        totalDuration += duration;
-        
-        if (!longestMessage || duration > longestMessage.duration) {
-          longestMessage = { ...message, duration };
-        }
-        
-        if (!shortestMessage || duration < shortestMessage.duration) {
-          shortestMessage = { ...message, duration };
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/rpc/get_message_stats`,
+      {
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`
         }
       }
-    });
-    
-    const averageDuration = totalMessages > 1 
-      ? totalDuration / (totalMessages - 1)
-      : 0;
-    
-    return json({
-      totalMessages,
-      averageDuration: Math.floor(averageDuration / 1000) + ' seconds',
-      longestMessage,
-      shortestMessage
-    });*/
+    );
 
-    return json({
-      totalMessages: 2,
-      averageDuration: '0 seconds',
-      longestMessage: {
-        "id": "1",
-        "content": "Hello, world!",
-        "author": "Anonymous",
-        "timestamp": "2021-07-01T12:00:00.000Z",
-        "payment_status": "completed",
-        "duration": 1000
-      },
-      shortestMessage: {
-        "id": "2",
-        "content": "Hello, world!",
-        "author": "Anonymous",
-        "timestamp": "2021-07-01T12:00:00.000Z",
-        "payment_status": "completed",
-        "duration": 500
-      }
-    });
+    if (!res.ok) {
+      const error = await res.text();
+      console.error(error);
+			throw new Error('Failed to fetch stats');
+		}
+    return json(await res.json());
+
   } catch (error) {
+    console.error(error);
     return json({ error: 'Failed to fetch stats' }, { status: 500 });
   }
 }

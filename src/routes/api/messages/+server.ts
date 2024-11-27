@@ -1,31 +1,28 @@
 import { json } from '@sveltejs/kit';
+import { SUPABASE_KEY, SUPABASE_URL } from '$env/static/private';
 
 export async function GET() {
   try {
-    /*const messages = await xata.db.messages
-      .filter('payment_status', 'completed')
-      .sort('timestamp', 'desc')
-      .getMany();*/
-
-    const fakeMessages = [
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/messages?select=*&order=timestamp.desc`,
       {
-        "id": "1",
-        "content": "Hello, world!",
-        "author": "Anonymous",
-        "timestamp": "2021-07-01T12:00:00.000Z",
-        "payment_status": "completed"
-      },
-      {
-        "id": "2",
-        "content": "Hello, world!",
-        "author": "Anonymous",
-        "timestamp": "2021-07-01T12:00:00.000Z",
-        "payment_status": "completed"
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`
+        }
       }
-      ];
-    
-    return json(fakeMessages);
+    );
+
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.message);
+    }
+
+    const messages = await res.json();
+    return json(messages);
+
   } catch (error) {
+    console.error(error);
     return json({ error: 'Failed to fetch messages' }, { status: 500 });
   }
 }
