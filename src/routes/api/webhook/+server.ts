@@ -1,19 +1,19 @@
 import { json } from '@sveltejs/kit';
 import Stripe from 'stripe';
-import { STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, SUPABASE_KEY, SUPABASE_URL } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 
-const stripe = new Stripe(STRIPE_SECRET_KEY);
+const stripe = new Stripe(env.STRIPE_SECRET_KEY);
 
 export async function POST({ request, fetch }) {
 	const body = await request.text();
 	const signature = request.headers.get('stripe-signature');
 
 	try {
-		if (!signature || !STRIPE_WEBHOOK_SECRET) {
+		if (!signature || !env.STRIPE_WEBHOOK_SECRET) {
 			throw new Error('Missing stripe signature or webhook secret');
 		}
 
-		const event = stripe.webhooks.constructEvent(body, signature, STRIPE_WEBHOOK_SECRET);
+		const event = stripe.webhooks.constructEvent(body, signature, env.STRIPE_WEBHOOK_SECRET);
 
 		if (event.type === 'payment_intent.succeeded') {
 			const session = event.data.object as Stripe.PaymentIntent;
@@ -39,11 +39,11 @@ export async function POST({ request, fetch }) {
 
 async function createMessage(fetch, messageData) {
 	const res = await fetch(
-		`${SUPABASE_URL}/rest/v1/messages`,
+		`${env.SUPABASE_URL}/rest/v1/messages`,
 		{
 			headers: {
-				'apikey': SUPABASE_KEY,
-				'Authorization': `Bearer ${SUPABASE_KEY}`,
+				'apikey': env.SUPABASE_KEY,
+				'Authorization': `Bearer ${env.SUPABASE_KEY}`,
 				'Content-Type': 'application/json',
 				'Prefer': 'return=representation',
 			},

@@ -1,14 +1,14 @@
 import { json } from '@sveltejs/kit';
-import { SUPABASE_KEY, SUPABASE_URL } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 
 export async function GET() {
   try {
     const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/messages?select=*&order=timestamp.desc`,
+      `${env.SUPABASE_URL}/rest/v1/messages?select=*&order=timestamp.desc`,
       {
         headers: {
-          'apikey': SUPABASE_KEY,
-          'Authorization': `Bearer ${SUPABASE_KEY}`
+          'apikey': env.SUPABASE_KEY,
+          'Authorization': `Bearer ${env.SUPABASE_KEY}`
         }
       }
     );
