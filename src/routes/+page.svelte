@@ -118,7 +118,7 @@
               class="bg-purple-600 hover:bg-purple-700 px-8 py-3 rounded-xl font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-sm hover:shadow-lg hover:scale-105 active:scale-95"
               disabled={isSubmitting || !message || !nickname}
             >
-              {isSubmitting ? 'Processing...' : 'Take over'}
+              {isSubmitting ? 'Processing...' : 'Take over (€0.50)'}
             </button>
           </div>
         </div>
