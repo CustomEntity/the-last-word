@@ -7,6 +7,7 @@
   export let show = false;
   export let onClose = () => {};
   export let onSelect = (shield: Shield['type']) => {};
+  export let currentShield: Shield['type'] | null = null;
 
   let selectedShield: Shield['type'] = 'none';
 
@@ -32,6 +33,8 @@
     const hours = Math.floor(minutes / 60);
     return `${hours} ${hours === 1 ? 'hour' : 'hours'}`;
   }
+
+  $: isProtectionActive = currentShield !== null && currentShield !== 'none';
 </script>
 
 {#if show}
@@ -43,7 +46,7 @@
       <div class="bg-gray-800 rounded-2xl shadow-2xl border border-gray-700">
         <div class="flex justify-between items-start p-6 border-b border-gray-700">
           <div>
-            <h2 class="text-2xl font-bold mb-2">Choose Your Shield</h2>
+            <h2 class="text-2xl font-bold mb-2">Choose Your Protection</h2>
             <p class="text-gray-400">Protect your message from being overwritten.</p>
           </div>
           <button
@@ -59,7 +62,7 @@
             <div
               class="w-full flex text-left items-center justify-between p-4 rounded-xl {shield.type === 'none' ? 'border border-dashed border-gray-600' : 'border border-gray-700'} hover:bg-gray-700/50 transition-all duration-200 {selectedShield === shield.type ? 'border-purple-500 bg-gray-700/50' : ''}"
               role="button"
-              on:click={() => selectedShield = shield.type as Shield['type']}
+              on:click={() => (selectedShield = shield.type as Shield['type'])}
               on:keydown
             >
               <div class="flex items-center gap-4">
@@ -67,7 +70,7 @@
                   <ShieldIcon type={shield.type as Shield['type']} size={32} />
                 </div>
                 <div>
-                  <span class="font-medium capitalize block">{shield.type === 'none' ? 'No Shield' : `${shield.type} Shield`}</span>
+                  <span class="font-medium capitalize block">{shield.type === 'none' ? 'No protection' : `${shield.type} protection`}</span>
                   {#if shield.duration > 0}
                     <p class="text-sm text-gray-400">Protected for {formatDuration(shield.duration)}</p>
                   {:else}
@@ -77,7 +80,7 @@
               </div>
               <div class="flex items-center gap-4">
                 <span class="text-lg font-bold {
-shield.type !== 'none' ? 'text-purple-500' : 'text-gray-400'
+                  shield.type !== 'none' ? 'text-purple-500' : 'text-gray-400'
                 }">€{shield.price.toFixed(2)}</span>
                 <div class="w-6 h-6 rounded-full border-2 border-gray-600 flex items-center justify-center {selectedShield === shield.type ? 'border-purple-500 bg-purple-500' : ''}">
                   {#if selectedShield === shield.type}
@@ -93,19 +96,16 @@ shield.type !== 'none' ? 'text-purple-500' : 'text-gray-400'
           <button
             class="w-full bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:hover:bg-purple-600 py-3 rounded-xl font-medium transition-colors"
             on:click={handleConfirm}
+            disabled={isProtectionActive}
           >
-            Post message {selectedShield !== 'none' ? `with ${selectedShield} shield` : ''} (€{SHIELD_TIERS[selectedShield].price.toFixed(2)})
+            {#if isProtectionActive}
+              Cannot post: a protection is currently active
+            {:else}
+              Post message {selectedShield !== 'none' ? `with ${selectedShield} protection` : ''} (€{SHIELD_TIERS[selectedShield].price.toFixed(2)})
+            {/if}
           </button>
         </div>
       </div>
     </div>
   </div>
 {/if}
-
-<style>
-
-  .form-checkbox:checked {
-    background-color: #6b46c1;
-    border-color: #6b46c1;
-  }
-</style>
