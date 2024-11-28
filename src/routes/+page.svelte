@@ -4,13 +4,14 @@
   import ShieldModal from '$lib/components/ShieldModal.svelte';
   import ShieldIcon from '$lib/components/icons/ShieldIcon.svelte';
   import type { Message, Shield } from '$lib/types';
-  
+
   let message = '';
   let nickname = '';
   let currentMessage: Message | null = null;
   let isSubmitting = false;
   let showShieldModal = false;
   let selectedShield: Shield['type'] = 'none';
+  let isLoading = true;
 
   async function handleSubmit() {
     showShieldModal = true;
@@ -40,6 +41,7 @@
     try {
       const response = await fetch('/api/last-message');
       currentMessage = await response.json();
+      isLoading = false;
 
       console.log('Current message:', currentMessage);
       setInterval(async () => {
@@ -49,13 +51,18 @@
 
     } catch (error) {
       console.error('Error fetching last message:', error);
+      isLoading = false;
     }
   });
 </script>
 
 <div class="flex flex-col h-[calc(100vh-theme(spacing.16))]">
   <div class="flex-grow flex items-center justify-center px-4 sm:px-6 py-8">
-    {#if currentMessage}
+    {#if isLoading}
+      <div class="flex items-center justify-center">
+        <div class="animate-spin rounded-full h-16 w-16 border-4 border-purple-500 border-t-transparent"></div>
+      </div>
+    {:else if currentMessage}
       <div class="w-full text-center space-y-6 sm:space-y-8">
         <p class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight break-words mx-auto max-w-[90vw]">
           {currentMessage.content}
