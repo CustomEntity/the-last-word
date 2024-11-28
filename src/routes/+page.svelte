@@ -245,7 +245,7 @@
   show={showShieldModal}
   onClose={() => showShieldModal = false}
   onSelect={(shield) => submitMessage(shield)}
-  currentShield={currentMessage?.shield ?? null}
+  currentShield={isShieldExpired ? 'none' : currentMessage?.shield}
 />
 
 <style>
